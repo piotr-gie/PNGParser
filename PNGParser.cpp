@@ -34,6 +34,18 @@ void PNGParser::printBytesAsInt()
 
     std::cout << std::endl;
 }
+void PNGParser::printBytesAs4ByteInt()
+{
+    std::cout << "Bytes:" << std::endl;
+    unsigned long longint;
+    for (int i=0; i<bytes.size();i+=4) {
+      longint = bytes[i+3]|(bytes[i+2]<<8)|(bytes[i+1]<<16)|(bytes[i]<<24);
+        std::cout << longint << "|";
+    }
+
+    std::cout << std::endl;
+}
+
 
 void PNGParser::showImage()
 {

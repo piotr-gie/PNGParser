@@ -8,5 +8,6 @@ int main()
     PNGParser parser{fileName};
 
     parser.printBytesAsInt();
+    parser.printBytesAs4ByteInt();
     //    parser.showImage(); moze nie dzialac
 }

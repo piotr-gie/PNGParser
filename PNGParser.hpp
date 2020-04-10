@@ -9,6 +9,7 @@ public:
     PNGParser(std::string fileName);
     void printBytesAsInt();
     void showImage();
+  void printBytesAs4ByteInt();  
 
 private:
     void readImage();
