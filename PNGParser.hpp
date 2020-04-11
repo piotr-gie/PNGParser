@@ -3,16 +3,43 @@
 #include <string>
 #include <vector>
 
+struct ImageData {
+    unsigned int width;
+    unsigned int height;
+    unsigned char bitDepth;
+    unsigned char colorType;
+
+    void printData();
+};
+
 class PNGParser
 {
 public:
     PNGParser(std::string fileName);
-    void printBytesAsInt();
+
+    void parseImage();
+
     void showImage();
+    void printImageBytes();
+    void printImageData();
 
 private:
-    void readImage();
+    ImageData imageData;
+
+    void readIHDR();
+
+    void readImageBytes();
+    void printBytesAsDecNumbers();
+    void printBytesAsHexNumbers();
+    void printBytesAsChars();
+
+    unsigned int concatenate4Bytes(
+        unsigned char b1,
+        unsigned char b2,
+        unsigned char b3,
+        unsigned char b4
+    );
 
     std::string fileName;
-    std::vector<int> bytes;
+    std::vector<unsigned char> imageBytes;
 };

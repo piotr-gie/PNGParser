@@ -4,9 +4,10 @@
 
 int main()
 {
-    std::string fileName{"example.png"};
+    std::string fileName{"PNGImages/example1.png"};
     PNGParser parser{fileName};
 
-    parser.printBytesAsInt();
-    //    parser.showImage(); moze nie dzialac
+    parser.printImageBytes();
+    parser.printImageData();
+    //    parser.showImage(); may not work
 }
