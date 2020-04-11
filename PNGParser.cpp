@@ -19,16 +19,28 @@ PNGParser::PNGParser(std::string fileName_) : fileName{fileName_}
 
 void PNGParser::readImageBytes()
 {
-    std::ifstream image{fileName};
+    std::ifstream image;
+
+    // open file at the end (to get its length)
+    image.open(fileName, std::ios::binary|std::ios::ate);
 
     if (not image) {
-        std::cerr << "Cannot open file" << std::endl;
+        std::cerr << "Error opening file" << std::endl;
     }
 
-    unsigned char byte;
-    while (image >> byte) {
-        imageBytes.push_back(byte);
+    // tellg() gives is the file position
+    // (and therefore length)
+    imageBytes.resize(image.tellg()); // make our vector big enough
+
+    if (not imageBytes.empty()) {
+        image.seekg(0); // move file position back to beginning
+
+        if (not image.read((char*)&imageBytes[0], imageBytes.size())) {
+            std::cerr << "Error reading file" << std::endl;
+        }
     }
+
+    image.close();
 }
 
 void PNGParser::parseImage()
