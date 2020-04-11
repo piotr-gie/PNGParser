@@ -6,8 +6,8 @@
 struct ImageData {
     unsigned int width;
     unsigned int height;
-    unsigned char bitDepth;
-    unsigned char colorType;
+    int bitDepth;
+    int colorType;
 
     void printData();
 };
@@ -28,6 +28,7 @@ private:
 
     void readIHDR();
 
+    int readNextByte(int& index);
     unsigned int readNext4Bytes(int& index);
 
     void readImageBytes();

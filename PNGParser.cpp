@@ -1,13 +1,16 @@
 #include "PNGParser.hpp"
 
-#include <iostream>
+#include <cassert>
 #include <fstream>
+#include <iostream>
 
 void ImageData::printData()
 {
     std::cout << "### Image data ###" << std::endl;
     std::cout << "Image width: " << width << std::endl;
     std::cout << "Image height: " << height << std::endl;
+    std::cout << "Image bit depth: " << bitDepth << std::endl;
+    std::cout << "Image color type: " << colorType << std::endl;
 }
 
 PNGParser::PNGParser(std::string fileName_) : fileName{fileName_}
@@ -61,10 +64,21 @@ void PNGParser::readIHDR()
 
     imageData.width = readNext4Bytes(index);
     imageData.height = readNext4Bytes(index);
+    imageData.bitDepth = readNextByte(index);
+    imageData.colorType = readNextByte(index);
+}
+
+int PNGParser::readNextByte(int& index)
+{
+    // assert(index < imageBytes.size());
+
+    return static_cast<int>(imageBytes[index++]);
 }
 
 unsigned int PNGParser::readNext4Bytes(int& index)
 {
+    // assert(index + 3 < imageBytes.size());
+
     index += 4;
     return concatenate4Bytes(
         imageBytes[index - 4],
