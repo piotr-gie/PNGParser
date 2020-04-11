@@ -28,6 +28,8 @@ private:
 
     void readIHDR();
 
+    unsigned int readNext4Bytes(int& index);
+
     void readImageBytes();
     void printBytesAsDecNumbers();
     void printBytesAsHexNumbers();

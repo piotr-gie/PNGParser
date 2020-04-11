@@ -7,7 +7,7 @@ void ImageData::printData()
 {
     std::cout << "### Image data ###" << std::endl;
     std::cout << "Image width: " << width << std::endl;
-    // TODO
+    std::cout << "Image height: " << height << std::endl;
 }
 
 PNGParser::PNGParser(std::string fileName_) : fileName{fileName_}
@@ -52,29 +52,26 @@ void PNGParser::parseImage()
 void PNGParser::readIHDR()
 {
     constexpr int ihdrFirstBytePosition{8};
+    int index{ihdrFirstBytePosition};
 
-    unsigned int ihdrLength =
-        concatenate4Bytes(
-            imageBytes[ihdrFirstBytePosition],
-            imageBytes[ihdrFirstBytePosition + 1],
-            imageBytes[ihdrFirstBytePosition + 2],
-            imageBytes[ihdrFirstBytePosition + 3]
-        );
+    unsigned int ihdrLength = readNext4Bytes(index);
 
-    constexpr int ihdrDataFirstBytePosition{16};
-    for (unsigned int i = ihdrDataFirstBytePosition; i < ihdrLength; i++) {
-        // calculations
-    }
+    constexpr int ihdrDataChunkFirstBytePosition{16};
+    index = ihdrDataChunkFirstBytePosition;
 
-    imageData.width =
-        concatenate4Bytes(
-            imageBytes[ihdrDataFirstBytePosition],
-            imageBytes[ihdrDataFirstBytePosition + 1],
-            imageBytes[ihdrDataFirstBytePosition + 2],
-            imageBytes[ihdrDataFirstBytePosition + 3]
-        );
+    imageData.width = readNext4Bytes(index);
+    imageData.height = readNext4Bytes(index);
+}
 
-    std::cout << "IHDR first byte (it should not be 'I'): " << imageBytes[ihdrFirstBytePosition] << std::endl;
+unsigned int PNGParser::readNext4Bytes(int& index)
+{
+    index += 4;
+    return concatenate4Bytes(
+        imageBytes[index - 4],
+        imageBytes[index - 3],
+        imageBytes[index - 2],
+        imageBytes[index - 1]
+    );
 }
 
 void PNGParser::printImageData()
