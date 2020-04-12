@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <fstream>
+#include <iomanip>
 #include <iostream>
 
 void ImageData::printData()
@@ -120,8 +121,15 @@ void PNGParser::printImageBytes()
 
 void PNGParser::printBytesAsDecNumbers()
 {
+    int i{};
     for (auto byte : imageBytes) {
-        std::cout << std::dec << static_cast<int>(byte) << " ";
+        if (i % 16 == 0)
+            std::cout << std::endl;
+        else if (i % 8 == 0)
+            std::cout << " ";
+        i++;
+
+        std::cout << std::setfill('0') << std::setw(3) << std::dec << static_cast<int>(byte) << " ";
     }
 
     std::cout << std::endl;
@@ -129,10 +137,18 @@ void PNGParser::printBytesAsDecNumbers()
 
 void PNGParser::printBytesAsHexNumbers()
 {
+    int i{};
     for (auto byte : imageBytes) {
-        std::cout << std::hex << static_cast<int>(byte) << " ";
+        if (i % 16 == 0)
+            std::cout << std::endl;
+        else if (i % 8 == 0)
+            std::cout << " ";
+        i++;
+
+        std::cout << std::setfill('0') << std::setw(2) << std::hex << static_cast<int>(byte) << " ";
     }
 
+    std::cout << std::dec;
     std::cout << std::endl;
 }
 
