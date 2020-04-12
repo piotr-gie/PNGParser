@@ -72,7 +72,7 @@ int PNGParser::readNextByte(int& index)
 {
     // assert(index < imageBytes.size());
 
-    return static_cast<int>(imageBytes[index++]);
+    return imageBytes[index++];
 }
 
 unsigned int PNGParser::readNext4Bytes(int& index)
