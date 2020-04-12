@@ -4,11 +4,14 @@
 #include <vector>
 
 struct ImageData {
+    int size; // int?
     unsigned int width;
     unsigned int height;
     int bitDepth;
     int colorType;
-    int size; // int?
+    int compressionMethod;
+    int filterMethod;
+    int interlaceMethod;
 
     void printData();
 };

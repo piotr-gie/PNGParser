@@ -8,11 +8,14 @@
 void ImageData::printData()
 {
     std::cout << "### Image data ###" << std::endl;
-    std::cout << "Image size: " << size << " bytes" << std::endl;
-    std::cout << "Image width: " << width << std::endl;
-    std::cout << "Image height: " << height << std::endl;
-    std::cout << "Image bit depth: " << bitDepth << std::endl;
-    std::cout << "Image color type: " << colorType << std::endl;
+    std::cout << "size: " << size << " bytes" << std::endl;
+    std::cout << "width: " << width << std::endl;
+    std::cout << "height: " << height << std::endl;
+    std::cout << "bit depth: " << bitDepth << std::endl;
+    std::cout << "color type: " << colorType << std::endl;
+    std::cout << "compression method: " << compressionMethod << std::endl;
+    std::cout << "filter method: " << filterMethod << std::endl;
+    std::cout << "interlace method: " << interlaceMethod << std::endl;
 }
 
 PNGParser::PNGParser(std::string fileName_) : fileName{fileName_}
@@ -60,6 +63,9 @@ void PNGParser::readIHDR()
     imageData.height = readNext4Bytes(index);
     imageData.bitDepth = readNextByte(index);
     imageData.colorType = readNextByte(index);
+    imageData.compressionMethod = readNextByte(index);
+    imageData.filterMethod = readNextByte(index);
+    imageData.interlaceMethod = readNextByte(index);
 }
 
 int PNGParser::readNextByte(int& index)
