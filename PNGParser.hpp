@@ -8,6 +8,7 @@ struct ImageData {
     unsigned int height;
     int bitDepth;
     int colorType;
+    int size; // int?
 
     void printData();
 };

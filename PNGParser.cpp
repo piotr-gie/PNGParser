@@ -8,6 +8,7 @@
 void ImageData::printData()
 {
     std::cout << "### Image data ###" << std::endl;
+    std::cout << "Image size: " << size << " bytes" << std::endl;
     std::cout << "Image width: " << width << std::endl;
     std::cout << "Image height: " << height << std::endl;
     std::cout << "Image bit depth: " << bitDepth << std::endl;
@@ -24,9 +25,12 @@ PNGParser::PNGParser(std::string fileName_) : fileName{fileName_}
 void PNGParser::readImageBytes()
 {
     std::ifstream image{fileName};
+
     if (not image) {
         std::cerr << "Cannot open file" << std::endl;
     }
+
+    imageBytes.clear();
     unsigned char byte;
     while (image >> std::noskipws >> byte) {
         imageBytes.push_back(byte);
@@ -35,6 +39,8 @@ void PNGParser::readImageBytes()
 
 void PNGParser::parseImage()
 {
+    imageData.size = imageBytes.size();
+
     // readHeader();
     readIHDR();
 }
