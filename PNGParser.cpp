@@ -28,6 +28,7 @@ void PNGParser::readImageBytes()
 
     if (not image) {
         std::cerr << "Cannot open file" << std::endl;
+        exit(1);
     }
 
     imageBytes.clear();
