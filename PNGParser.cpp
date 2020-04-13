@@ -54,7 +54,7 @@ void PNGParser::readIHDR()
     constexpr int ihdrFirstBytePosition{8};
     int index{ihdrFirstBytePosition};
 
-    unsigned int ihdrLength = readNext4Bytes(index);
+    // unsigned int ihdrLength = readNext4Bytes(index);
 
     constexpr int ihdrDataChunkFirstBytePosition{16};
     index = ihdrDataChunkFirstBytePosition;
@@ -120,13 +120,13 @@ void PNGParser::printImageBytes()
 
 void PNGParser::printBytesAsDecNumbers()
 {
-    int i{};
+    int ithByte{};
     for (auto byte : imageBytes) {
-        if (i % 16 == 0)
+        if (ithByte % 16 == 0)
             std::cout << std::endl;
-        else if (i % 8 == 0)
+        else if (ithByte % 8 == 0)
             std::cout << " ";
-        i++;
+        ithByte++;
 
         std::cout << std::setfill('0') << std::setw(3) << std::dec << static_cast<int>(byte) << " ";
     }
@@ -136,13 +136,13 @@ void PNGParser::printBytesAsDecNumbers()
 
 void PNGParser::printBytesAsHexNumbers()
 {
-    int i{};
+    int ithByte{};
     for (auto byte : imageBytes) {
-        if (i % 16 == 0)
+        if (ithByte % 16 == 0)
             std::cout << std::endl;
-        else if (i % 8 == 0)
+        else if (ithByte % 8 == 0)
             std::cout << " ";
-        i++;
+        ithByte++;
 
         std::cout << std::setfill('0') << std::setw(2) << std::hex << static_cast<int>(byte) << " ";
     }
