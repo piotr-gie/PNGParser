@@ -4,7 +4,7 @@
 
 int main(int argc, char** argv)
 {
-    std::string fileName{"PNGImages/example1.png"};
+    std::string fileName{"PNGImages/dice.png"};
     if (argc > 1) {
         fileName = argv[1];
     }
