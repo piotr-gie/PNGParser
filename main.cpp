@@ -11,7 +11,9 @@ int main(int argc, char** argv)
 
     PNGParser parser{fileName};
 
-    parser.printImageBytes();
+    // parser.printImageBytes();
     parser.printImageData();
-    // parser.showImage(); // may not work
+    parser.createAnonymizeImage();
+    parser.showImage(); // may not work
+    parser.showAnonymizedImage(); // may not work
 }

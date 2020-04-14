@@ -4,6 +4,7 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <vector>
 
 void ImageData::printData()
 {
@@ -16,6 +17,9 @@ void ImageData::printData()
     std::cout << "compression method: " << compressionMethod << std::endl;
     std::cout << "filter method: " << filterMethod << std::endl;
     std::cout << "interlace method: " << interlaceMethod << std::endl;
+
+    std::cout << "contains PLTE chunk: " << std::boolalpha << isPLTE << std::endl;
+    std::cout << "Number of IDAT chunks: " << idatChunks << std::endl;
 }
 
 PNGParser::PNGParser(std::string fileName_) : fileName{fileName_}
@@ -34,7 +38,7 @@ void PNGParser::readImageBytes()
         exit(1);
     }
 
-    imageBytes.clear();
+    // imageBytes.clear();
     unsigned char byte;
     while (image >> std::noskipws >> byte) {
         imageBytes.push_back(byte);
@@ -45,20 +49,50 @@ void PNGParser::parseImage()
 {
     imageData.size = imageBytes.size();
 
-    // readHeader();
+    readHeader();
     readIHDR();
+    readPLTE();
+    readIDAT();
+    readIEND();
+}
+
+void PNGParser::readHeader()
+{
+    constexpr int headerLength{8};
+    std::string header;
+    for (std::size_t i = 0; i < headerLength; i++) {
+        header += imageBytes[i];
+    }
+
+    if (header != "\x89PNG\r\n\x1a\n") {
+        std::cerr << "Wrong image header";
+        exit(1);
+    }
+
+    for (std::size_t  i = 0; i < headerLength; i++) {
+        anonedImageBytes.push_back(imageBytes[i]);
+    }
 }
 
 void PNGParser::readIHDR()
 {
-    constexpr int ihdrFirstBytePosition{8};
-    int index{ihdrFirstBytePosition};
+    unsigned int ihdrIndex{0};
+    for (std::size_t i = 0; i < imageBytes.size() - 3; i++) {
+        if (imageBytes[i] == 'I' and imageBytes[i + 1] == 'H'
+        and imageBytes[i + 2] == 'D' and imageBytes[i + 3] == 'R') {
+            ihdrIndex = i;
+            break;
+        }
+    }
 
-    // unsigned int ihdrLength = readNext4Bytes(index);
+    unsigned int index{ihdrIndex - 4};
+    unsigned int ihdrLength = readNext4Bytes(index);
+    if (ihdrLength != 13) {
+        std::cerr << "Wrong IHDR chunk size";
+        exit(1);
+    }
 
-    constexpr int ihdrDataChunkFirstBytePosition{16};
-    index = ihdrDataChunkFirstBytePosition;
-
+    index += 4;
     imageData.width = readNext4Bytes(index);
     imageData.height = readNext4Bytes(index);
     imageData.bitDepth = readNextByte(index);
@@ -66,18 +100,115 @@ void PNGParser::readIHDR()
     imageData.compressionMethod = readNextByte(index);
     imageData.filterMethod = readNextByte(index);
     imageData.interlaceMethod = readNextByte(index);
+
+    for (std::size_t i = ihdrIndex - 4; i < ihdrIndex - 4 + ihdrLength + 12; i++) {
+        anonedImageBytes.push_back(imageBytes[i]);
+    }
 }
 
-int PNGParser::readNextByte(int& index)
+void PNGParser::readPLTE()
 {
-    // assert(index < imageBytes.size());
+    unsigned int plteIndex{0};
+    for (std::size_t i = 0; i < imageBytes.size() - 3; i++) {
+        if (imageBytes[i] == 'P' and imageBytes[i + 1] == 'L'
+        and imageBytes[i + 2] == 'T' and imageBytes[i + 3] == 'E') {
+            plteIndex = i;
+            break;
+        }
+    }
+
+    if (plteIndex == 0) {
+        imageData.isPLTE = false;
+        return;
+    }
+
+    imageData.isPLTE = true;
+    unsigned int index{plteIndex - 4};
+    unsigned int plteLength = readNext4Bytes(index);
+    if (plteLength % 3 != 0) {
+        std::cerr << "Wrong PLTE chunk length";
+        exit(1);
+    }
+
+    index += 4;
+    std::cout << "PLTE Palette" << std::endl;
+    for (unsigned int i = 0; i < plteLength / 3; i++) {
+        std::cout << "*Pallete no. " << i << "*"
+                  << " Red: " << readNextByte(index)
+                  << " Green: " << readNextByte(index)
+                  << " Blue: " << readNextByte(index)
+                  << std::endl;
+    }
+
+    for (std::size_t i = plteIndex - 4; i < plteIndex - 4 + plteLength + 12; i++) {
+        anonedImageBytes.push_back(imageBytes[i]);
+    }
+}
+
+void PNGParser::readIDAT()
+{
+    std::vector<unsigned int> idatIndice;
+    for (std::size_t i = 0; i < imageBytes.size() - 3; i++) {
+        if (imageBytes[i] == 'I' and imageBytes[i + 1] == 'D'
+        and imageBytes[i + 2] == 'A' and imageBytes[i + 3] == 'T') {
+            idatIndice.push_back(i);
+        }
+    }
+
+    std::vector<unsigned int> idatLengths;
+    for (std::size_t i = 0; i < idatIndice.size(); i++) {
+        unsigned int index{idatIndice[i] - 4};
+        unsigned int idatLength = readNext4Bytes(index);
+        idatLengths.push_back(idatLength);
+    }
+
+    imageData.idatChunks = idatIndice.size();
+    for (std::size_t j = 0; j < idatIndice.size(); j++) {
+        for (std::size_t i = idatIndice[j] - 4; i < idatIndice[j] - 4 + idatLengths[j] + 12; i++) {
+            anonedImageBytes.push_back(imageBytes[i]);
+        }
+    }
+}
+
+void PNGParser::readIEND()
+{
+    unsigned int iendIndex{0};
+    for (std::size_t i = 0; i < imageBytes.size() - 3; i++) {
+        if (imageBytes[i] == 'I' and imageBytes[i + 1] == 'E'
+        and imageBytes[i + 2] == 'N' and imageBytes[i + 3] == 'D') {
+            iendIndex = i;
+            break;
+        }
+    }
+
+    if (iendIndex == 0) {
+        std::cerr << "Wrong IEND chunk" << std::endl;
+        return;
+    }
+
+    unsigned int index{iendIndex - 4};
+    unsigned int iendLength = readNext4Bytes(index);
+
+    if (iendLength != 0) {
+        std::cerr << "Wrong IEND chunk length";
+        exit(1);
+    }
+
+    for (std::size_t i = iendIndex - 4; i < iendIndex - 4 + iendLength + 12; i++) {
+        anonedImageBytes.push_back(imageBytes[i]);
+    }
+}
+
+int PNGParser::readNextByte(unsigned int& index)
+{
+    assert(index < imageBytes.size());
 
     return imageBytes[index++];
 }
 
-unsigned int PNGParser::readNext4Bytes(int& index)
+unsigned int PNGParser::readNext4Bytes(unsigned int& index)
 {
-    // assert(index + 3 < imageBytes.size());
+    assert(index + 3 < imageBytes.size());
 
     index += 4;
     return concatenate4Bytes(
@@ -91,6 +222,15 @@ unsigned int PNGParser::readNext4Bytes(int& index)
 void PNGParser::printImageData()
 {
     imageData.printData();
+}
+
+void PNGParser::createAnonymizeImage()
+{
+    std::ofstream anonedImg{"anonedImage.png"};
+
+    for (std::size_t i = 0; i < anonedImageBytes.size(); i++) {
+        anonedImg << anonedImageBytes[i];
+    }
 }
 
 unsigned int PNGParser::concatenate4Bytes(
@@ -165,6 +305,15 @@ void PNGParser::showImage()
     std::string showImageCommand;
     showImageCommand += "xdg-open ";
     showImageCommand += fileName;
+
+    system(showImageCommand.c_str());
+}
+
+void PNGParser::showAnonymizedImage()
+{
+    std::string showImageCommand;
+    showImageCommand += "xdg-open ";
+    showImageCommand += "anonedImage.png";
 
     system(showImageCommand.c_str());
 }

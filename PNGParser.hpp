@@ -13,6 +13,9 @@ struct ImageData {
     int filterMethod;
     int interlaceMethod;
 
+    bool isPLTE;
+    int idatChunks;
+
     void printData();
 };
 
@@ -23,17 +26,23 @@ public:
 
     void parseImage();
 
+    void createAnonymizeImage();
     void showImage();
+    void showAnonymizedImage();
     void printImageBytes();
     void printImageData();
 
 private:
     ImageData imageData;
 
+    void readHeader();
     void readIHDR();
+    void readPLTE();
+    void readIDAT();
+    void readIEND();
 
-    int readNextByte(int& index);
-    unsigned int readNext4Bytes(int& index);
+    int readNextByte(unsigned int& index);
+    unsigned int readNext4Bytes(unsigned int& index);
 
     void readImageBytes();
     void printBytesAsDecNumbers();
@@ -49,4 +58,5 @@ private:
 
     std::string fileName;
     std::vector<unsigned char> imageBytes;
+    std::vector<unsigned char> anonedImageBytes;
 };
