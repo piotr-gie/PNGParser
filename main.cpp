@@ -14,6 +14,6 @@ int main(int argc, char** argv)
     // parser.printImageBytes();
     parser.printImageData();
     parser.createAnonymizeImage();
-    parser.showImage(); // may not work
-    parser.showAnonymizedImage(); // may not work
+    // parser.showImage(); // xdg-open required
+    // parser.showAnonymizedImage(); // xdg-open required
 }
