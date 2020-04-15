@@ -1,10 +1,15 @@
 #include "PNGParser.hpp"
+#include "FFT.hpp"
 
 #include <iostream>
+#include <Magick++.h>
+
+using namespace Magick;
 
 int main(int argc, char** argv)
 {
-    std::string fileName{"PNGImages/dice.png"};
+    InitializeMagick(*argv);
+    std::string fileName{"PNGImages/lena.png"};
     if (argc > 1) {
         fileName = argv[1];
     }
@@ -14,6 +19,10 @@ int main(int argc, char** argv)
     // parser.printImageBytes();
     parser.printImageData();
     parser.createAnonymizeImage();
+
     // parser.showImage(); // xdg-open required
     // parser.showAnonymizedImage(); // xdg-open required
+    FourierTransform fft(fileName);
+    fft.showMagnitude();
+    fft.showPhase();
 }
