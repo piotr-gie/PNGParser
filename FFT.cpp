@@ -22,10 +22,7 @@ try {
 
     // Perform FFT and save results to FFTresult vector of two images (Magnitude and Phase)
     forwardFourierTransformImage(&FFTresult,image);
-
-    // Write FFT rusult images to files
-    FFTresult[0].write( "Magnitude.png" );
-    cout<<"Magnitude:"<<endl;
+    //Make magnitude visible by using logarythmic scale
     Pixels view(FFTresult[0]);
     cout<<FFTresult[0].columns();
     PixelPacket *pixels = view.get(0,0,FFTresult[0].columns(),FFTresult[0].rows()); 
@@ -39,7 +36,11 @@ try {
   }  
 
     view.sync();
+
+    cout<<"Magnitude:"<<endl;
     FFTresult[0].display();
+    // Write FFT result images to file
+    FFTresult[0].write( "Magnitude.png" );
   } 
   catch( Exception &error_ ) 
     { 
@@ -58,7 +59,7 @@ try {
     // Perform FFT and save results to FFTresult vector of two images (Magnitude and Phase)
     forwardFourierTransformImage(&FFTresult,image);
 
-    // Write FFT rusult images to files
+    // Write FFT rusult images to file
     FFTresult[1].write( "Phase.png" );
     cout<<"Phase:"<<endl;
     FFTresult[1].display();
