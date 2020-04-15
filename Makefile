@@ -1,11 +1,13 @@
-__start__: a.out
-	./a.out
+FLAGS= -Wall -pedantic -std=c++17 -iquote inc 
 
-a.out: main.o PNGParser.o
-	g++ main.o PNGParser.o
+parser.out: main.o PNGParser.o FFT.o
+	g++ ${FLAGS}  main.o PNGParser.o FFT.o -o PNGParser `/usr/lib/x86_64-linux-gnu/ImageMagick-6.9.7/bin-q16hdri/Magick++-config --cppflags --cxxflags --ldflags --libs`
 
-main.o: main.cpp PNGParser.hpp
-	g++ -c -Wall -pedantic main.cpp
+main.o: main.cpp PNGParser.hpp FFT.hpp
+	g++ -c ${FLAGS}  main.cpp `/usr/lib/x86_64-linux-gnu/ImageMagick-6.9.7/bin-q16hdri/Magick++-config --cppflags --cxxflags --ldflags --libs`
 
 PNGParser.o: PNGParser.hpp PNGParser.cpp
-	g++ -c -Wall -pedantic PNGParser.cpp
+	g++ -c ${FLAGS}  PNGParser.cpp 
+
+FFT.o: FFT.hpp FFT.cpp
+	g++ -c ${FLAGS}  FFT.cpp `/usr/lib/x86_64-linux-gnu/ImageMagick-6.9.7/bin-q16hdri/Magick++-config --cppflags --cxxflags --ldflags --libs`
