@@ -6,6 +6,18 @@
 #include <iostream>
 #include <vector>
 
+void tEXtChunk::print()
+{
+    if (isContained == false) {
+        return;
+    }
+
+    std::cout << "tEXT chunk:" << std::endl;
+    for (std::size_t i = 0; i < keywords.size(); i++) {
+        std::cout << keywords[i] << ": " << texts[i] << std::endl;
+    }
+}
+
 void ImageData::printData()
 {
     std::cout << "### Image data ###" << std::endl;
@@ -20,6 +32,8 @@ void ImageData::printData()
 
     std::cout << "contains PLTE chunk: " << std::boolalpha << isPLTE << std::endl;
     std::cout << "Number of IDAT chunks: " << idatChunks << std::endl;
+
+    tEXt.print();
 }
 
 PNGParser::PNGParser(std::string fileName_) : fileName{fileName_}
@@ -54,6 +68,8 @@ void PNGParser::parseImage()
     readPLTE();
     readIDAT();
     readIEND();
+
+    readtEXt();
 }
 
 void PNGParser::readHeader()
@@ -196,6 +212,42 @@ void PNGParser::readIEND()
 
     for (std::size_t i = iendIndex - 4; i < iendIndex - 4 + iendLength + 12; i++) {
         anonedImageBytes.push_back(imageBytes[i]);
+    }
+}
+
+void PNGParser::readtEXt()
+{
+    std::vector<unsigned int> tEXtIndice;
+    for (std::size_t i = 0; i < imageBytes.size() - 3; i++) {
+        if (imageBytes[i] == 't' and imageBytes[i + 1] == 'E'
+        and imageBytes[i + 2] == 'X' and imageBytes[i + 3] == 't') {
+            tEXtIndice.push_back(i);
+        }
+    }
+
+    if (tEXtIndice.empty()) {
+        imageData.tEXt.isContained = false;
+        return;
+    }
+    imageData.tEXt.isContained = true;
+
+    for (std::size_t i = 0; i < tEXtIndice.size(); i++) {
+        unsigned int index{tEXtIndice[i] - 4};
+        unsigned int tEXtLength = readNext4Bytes(index);
+
+        index += 4;
+        const unsigned int startData{index};
+        std::string keyword{};
+        while (imageBytes[index] != 0) {
+            keyword += imageBytes[index++];
+        }
+        imageData.tEXt.keywords.push_back(keyword);
+
+        std::string text{};
+        for (std::size_t j = startData + keyword.size() + 1; j < startData + tEXtLength; j++) {
+            text += imageBytes[j];
+        }
+        imageData.tEXt.texts.push_back(text);
     }
 }
 

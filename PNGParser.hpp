@@ -3,7 +3,17 @@
 #include <string>
 #include <vector>
 
-struct ImageData {
+struct tEXtChunk
+{
+    bool isContained;
+
+    std::vector<std::string> keywords;
+    std::vector<std::string> texts;
+
+    void print();
+};
+struct ImageData
+{
     int size; // int?
     unsigned int width;
     unsigned int height;
@@ -17,6 +27,8 @@ struct ImageData {
     int idatChunks;
 
     void printData();
+
+    tEXtChunk tEXt;
 };
 
 class PNGParser
@@ -40,6 +52,8 @@ private:
     void readPLTE();
     void readIDAT();
     void readIEND();
+
+    void readtEXt();
 
     int readNextByte(unsigned int& index);
     unsigned int readNext4Bytes(unsigned int& index);
