@@ -1,5 +1,5 @@
 # PNGParser
 
-## Run
+### Run
 * make
 * ./PNGParser <png-file-name>
