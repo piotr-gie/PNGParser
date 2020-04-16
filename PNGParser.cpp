@@ -9,6 +9,7 @@
 void tEXtChunk::print()
 {
     if (isContained == false) {
+        std::cout << "Chunk tEXT does not exist" << std::endl;
         return;
     }
 
@@ -404,6 +405,11 @@ void PNGParser::printIDATChunks()
 void PNGParser::printPalette()
 {
     imageData.plte.printPalette();
+}
+
+void PNGParser::printtXTe()
+{
+    imageData.tEXt.print();
 }
 
 void PNGParser::showImage()

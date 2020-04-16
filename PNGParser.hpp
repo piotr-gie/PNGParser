@@ -68,6 +68,7 @@ public:
     void printImageData();
     void printIDATChunks();
     void printPalette();
+    void printtXTe();
 
 private:
     ImageData imageData;

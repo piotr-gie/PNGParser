@@ -71,6 +71,10 @@ int main(int argc, char** argv)
                 parser.printPalette();
                 break;
 
+            case 10:
+                parser.printtXTe();
+                break;
+
             default:
                 std::cout << "There is no such option" << std::endl;
                 break;
@@ -90,6 +94,7 @@ void showMenu()
     std::cout << "7 - show anonymized image" << std::endl;
     std::cout << "8 - show IDAT chunks" << std::endl;
     std::cout << "9 - show Palette" << std::endl;
+    std::cout << "10 - show tEXT chunk" << std::endl;
     std::cout << std::endl;
     std::cout << "0 - exit" << std::endl;
 }
