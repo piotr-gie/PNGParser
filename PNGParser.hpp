@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <string>
 #include <vector>
 
@@ -12,6 +13,27 @@ struct tEXtChunk
 
     void print();
 };
+
+struct IDATChunk
+{
+    int chunksNumber;
+    std::vector<unsigned int> chunksSize;
+
+    void print();
+    void printChunksSize();
+};
+
+struct PLTEChunk
+{
+    std::vector<int> palette;
+
+    bool isContained;
+
+    void print();
+    void printPalette();
+};
+
+
 struct ImageData
 {
     int size; // int?
@@ -24,10 +46,11 @@ struct ImageData
     int interlaceMethod;
 
     bool isPLTE;
-    int idatChunks;
 
     void printData();
 
+    PLTEChunk plte;
+    IDATChunk idat;
     tEXtChunk tEXt;
 };
 
@@ -43,6 +66,8 @@ public:
     void showAnonymizedImage();
     void printImageBytes();
     void printImageData();
+    void printIDATChunks();
+    void printPalette();
 
 private:
     ImageData imageData;

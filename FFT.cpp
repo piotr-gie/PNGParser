@@ -6,10 +6,8 @@
 using namespace std;
 using namespace Magick;
 
-
 FourierTransform::FourierTransform(string fileName_) : fileName{fileName_}
 {
-
 }
 
 void FourierTransform::showMagnitude()

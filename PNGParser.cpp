@@ -18,21 +18,57 @@ void tEXtChunk::print()
     }
 }
 
+void IDATChunk::print()
+{
+    std::cout << "Number of IDAT chunks: " << chunksNumber << std::endl;
+}
+
+void IDATChunk::printChunksSize()
+{
+    std::cout << "Number of IDAT chunks: " << chunksNumber << std::endl;
+    std::cout << "Chunks sizes: { ";
+    for (auto size : chunksSize) {
+        std::cout << size << " ";
+    }
+    std::cout << "}" << std::endl;
+}
+
+void PLTEChunk::print()
+{
+    std::cout << "contains PLTE chunk: " << std::boolalpha << isContained << std::endl;
+    std::cout << "PLTE length: " << palette.size() << std::endl;
+}
+
+void PLTEChunk::printPalette()
+{
+    if (not isContained) {
+        std::cout << "Palette is not available because PLTE chunk does not exist" << std::endl;
+        return;
+    }
+    std::cout << "Palette: " << std::endl;
+    for (unsigned int i = 0; i < palette.size() / 3; i+=3) {
+        std::cout << "*Pallete no. " << i << "*"
+                  << " Red: " << palette[i]
+                  << " Green: " << palette[i + 1]
+                  << " Blue: " << palette[i + 2]
+                  << std::endl;
+    }
+}
+
 void ImageData::printData()
 {
     std::cout << "### Image data ###" << std::endl;
     std::cout << "size: " << size << " bytes" << std::endl;
-    std::cout << "width: " << width << std::endl;
-    std::cout << "height: " << height << std::endl;
+    std::cout << "width: " << width << " pixels" << std::endl;
+    std::cout << "height: " << height << " pixels" << std::endl;
     std::cout << "bit depth: " << bitDepth << std::endl;
     std::cout << "color type: " << colorType << std::endl;
     std::cout << "compression method: " << compressionMethod << std::endl;
     std::cout << "filter method: " << filterMethod << std::endl;
     std::cout << "interlace method: " << interlaceMethod << std::endl;
 
-    std::cout << "contains PLTE chunk: " << std::boolalpha << isPLTE << std::endl;
-    std::cout << "Number of IDAT chunks: " << idatChunks << std::endl;
-
+    plte.print();
+    idat.print();
     tEXt.print();
 }
 
@@ -134,11 +170,11 @@ void PNGParser::readPLTE()
     }
 
     if (plteIndex == 0) {
-        imageData.isPLTE = false;
+        imageData.plte.isContained = false;
         return;
     }
 
-    imageData.isPLTE = true;
+    imageData.plte.isContained = true;
     unsigned int index{plteIndex - 4};
     unsigned int plteLength = readNext4Bytes(index);
     if (plteLength % 3 != 0) {
@@ -147,13 +183,19 @@ void PNGParser::readPLTE()
     }
 
     index += 4;
+
     std::cout << "PLTE Palette" << std::endl;
     for (unsigned int i = 0; i < plteLength / 3; i++) {
-        std::cout << "*Pallete no. " << i << "*"
-                  << " Red: " << readNextByte(index)
-                  << " Green: " << readNextByte(index)
-                  << " Blue: " << readNextByte(index)
-                  << std::endl;
+
+        imageData.plte.palette.push_back(readNextByte(index));
+        imageData.plte.palette.push_back(readNextByte(index));
+        imageData.plte.palette.push_back(readNextByte(index));
+
+        // std::cout << "*Pallete no. " << i << "*"
+        //           << " Red: " << readNextByte(index)
+        //           << " Green: " << readNextByte(index)
+        //           << " Blue: " << readNextByte(index)
+        //           << std::endl;
     }
 
     for (std::size_t i = plteIndex - 4; i < plteIndex - 4 + plteLength + 12; i++) {
@@ -178,7 +220,9 @@ void PNGParser::readIDAT()
         idatLengths.push_back(idatLength);
     }
 
-    imageData.idatChunks = idatIndice.size();
+    imageData.idat.chunksNumber = idatIndice.size();
+    imageData.idat.chunksSize = idatLengths;
+
     for (std::size_t j = 0; j < idatIndice.size(); j++) {
         for (std::size_t i = idatIndice[j] - 4; i < idatIndice[j] - 4 + idatLengths[j] + 12; i++) {
             anonedImageBytes.push_back(imageBytes[i]);
@@ -350,6 +394,16 @@ void PNGParser::printBytesAsChars()
     }
 
     std::cout << std::endl;
+}
+
+void PNGParser::printIDATChunks()
+{
+    imageData.idat.printChunksSize();
+}
+
+void PNGParser::printPalette()
+{
+    imageData.plte.printPalette();
 }
 
 void PNGParser::showImage()
