@@ -2,7 +2,7 @@
 
 ### Run
 * make
-* ./PNGParser <png-file-name>
+* ./PNGParser png-file-name
 
 ### Authors
 Tomasz Filip,
