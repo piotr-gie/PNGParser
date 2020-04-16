@@ -5,5 +5,5 @@
 * ./PNGParser <png-file-name>
 
 ### Authors
-Tomasz Filip
+Tomasz Filip,
 Piotr Grzelczak
