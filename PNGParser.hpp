@@ -36,7 +36,7 @@ struct PLTEChunk
 
 struct ImageData
 {
-    int size; // int?
+    long long size;
     unsigned int width;
     unsigned int height;
     int bitDepth;

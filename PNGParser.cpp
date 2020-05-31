@@ -47,8 +47,9 @@ void PLTEChunk::printPalette()
         return;
     }
     std::cout << "Palette: " << std::endl;
-    for (unsigned int i = 0; i < palette.size() / 3; i+=3) {
-        std::cout << "*Pallete no. " << i << "*"
+    int paletteNr{1};
+    for (unsigned int i = 0; i < palette.size()/* / 3*/; i += 3) {
+        std::cout << "*Pallete no. " << paletteNr++ << "*"
                   << " Red: " << palette[i]
                   << " Green: " << palette[i + 1]
                   << " Blue: " << palette[i + 2]
@@ -191,12 +192,6 @@ void PNGParser::readPLTE()
         imageData.plte.palette.push_back(readNextByte(index));
         imageData.plte.palette.push_back(readNextByte(index));
         imageData.plte.palette.push_back(readNextByte(index));
-
-        // std::cout << "*Pallete no. " << i << "*"
-        //           << " Red: " << readNextByte(index)
-        //           << " Green: " << readNextByte(index)
-        //           << " Blue: " << readNextByte(index)
-        //           << std::endl;
     }
 
     for (std::size_t i = plteIndex - 4; i < plteIndex - 4 + plteLength + 12; i++) {
@@ -417,6 +412,7 @@ void PNGParser::showImage()
     std::string showImageCommand;
     showImageCommand += "xdg-open ";
     showImageCommand += fileName;
+    showImageCommand += "&";
 
     system(showImageCommand.c_str());
 }
@@ -425,7 +421,7 @@ void PNGParser::showAnonymizedImage()
 {
     std::string showImageCommand;
     showImageCommand += "xdg-open ";
-    showImageCommand += "anonedImage.png";
+    showImageCommand += "anonedImage.png &";
 
     system(showImageCommand.c_str());
 }
